@@ -1,0 +1,5 @@
+services:
+  uvicorn:
+    build: .
+    ports:
+      - "80:80"
