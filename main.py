@@ -12,19 +12,16 @@ with open("data.json") as f:
 
 @app.get("/fasta/{fasta}/{seqid}:{start}-{end}")
 def fasta_range(fasta: str, seqid: str, start: int, end: int):
-  with pysam.FastaFile(BASE_URL + data[fasta] + fasta) as f:
-    seq = f.fetch(reference=seqid, start = start, end = end)
+    seq = pysam.FastaFile(BASE_URL + data[fasta] + fasta).fetch(reference=seqid, start = start, end = end)
     return { "sequence" : seq }
 
 @app.get("/fasta/{fasta}/references")
 def fasta_references(fasta: str):
-  with pysam.FastaFile(BASE_URL + data[fasta] + fasta) as f:
-    return { "references": f.references }
+    return { "references": pysam.FastaFile(BASE_URL + data[fasta] + fasta).references }
 
 @app.get("/gff/{gff}/contigs")
 def gff_references(gff: str):
-  with pysam.TabixFile(BASE_URL + data[gff] + gff) as f:
-    return { "contigs": f.contigs }
+    return { "contigs": pysam.TabixFile(BASE_URL + data[gff] + gff).contigs }
 
 @app.get("/gff/{gff}/{seqid}:{start}-{end}")
 def gff_features(gff: str, seqid: str, start: int, end: int):
@@ -36,6 +33,26 @@ def gff_features(gff: str, seqid: str, start: int, end: int):
             "score": feature.score,
             "strand": feature.strand,
             "frame": feature.frame,
-            "attributes": feature.attributes} 
+            "attributes": list(feature.attributes)} 
             for feature 
             in pysam.TabixFile(BASE_URL + data[gff] + gff).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
+
+@app.get("/vcf/{vcf}/contigs")
+def vcf_contigs(vcf: str):
+  return { "contigs": list(pysam.VariantFile(BASE_URL + data[vcf] + vcf).header.contigs) }
+
+@app.get("/vcf/{vcf}/{seqid}:{start}-{end}")
+def vcf_features(vcf: str, seqid: str, start: int, end: int):
+  return [ {"chrom":   feature.chrom,
+            "pos":     feature.pos,
+            "id":      feature.id,
+            "ref":     feature.ref,
+            "alts":    feature.alts,
+            "qual":    feature.qual,
+            "filter":  list(feature.filter),
+            "info":    list(feature.info),
+            "format":  list(feature.format),
+            "samples": list(feature.samples),
+            "alleles": feature.alleles}
+            for feature 
+            in pysam.VariantFile(BASE_URL + data[vcf] + vcf).fetch(seqid, start, end) ]
