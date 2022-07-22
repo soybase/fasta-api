@@ -33,7 +33,7 @@ def gff_features(gff: str, seqid: str, start: int, end: int):
             "score": feature.score,
             "strand": feature.strand,
             "frame": feature.frame,
-            "attributes": list(feature.attributes)} 
+            "attributes": feature.attributes} 
             for feature 
             in pysam.TabixFile(BASE_URL + data[gff] + gff).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
 
