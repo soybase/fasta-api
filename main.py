@@ -2,29 +2,29 @@
 import json
 import pysam
 from fastapi import FastAPI
+import urllib
 
-BASE_URL = "https://www.soybase.org/data/"
 
 app = FastAPI()
 
 with open("data.json") as f:
     data = json.load(f)
 
-@app.get("/fasta/{fasta}/{seqid}:{start}-{end}")
-def fasta_range(fasta: str, seqid: str, start: int, end: int):
-    seq = pysam.FastaFile(BASE_URL + data[fasta] + fasta).fetch(reference=seqid, start = start, end = end)
+@app.get("/fasta/{url:path}/{seqid}:{start}-{end}")
+def fasta_range(url: str, seqid: str, start: int, end: int):
+    seq = pysam.FastaFile(urllib.parse.unquote(url)).fetch(reference=seqid, start = start, end = end)
     return { "sequence" : seq }
 
-@app.get("/fasta/{fasta}/references")
-def fasta_references(fasta: str):
-    return { "references": pysam.FastaFile(BASE_URL + data[fasta] + fasta).references }
+@app.get("/fasta/{url:path}/references")
+def fasta_references(url: str):
+    return { "references": pysam.FastaFile(urllib.parse.unquote(url)).references }
 
-@app.get("/gff/{gff}/contigs")
-def gff_references(gff: str):
-    return { "contigs": pysam.TabixFile(BASE_URL + data[gff] + gff).contigs }
+@app.get("/gff/{url:path}/contigs")
+def gff_references(url: str):
+    return { "contigs": pysam.TabixFile(urllib.parse.unquote(url)).contigs }
 
-@app.get("/gff/{gff}/{seqid}:{start}-{end}")
-def gff_features(gff: str, seqid: str, start: int, end: int):
+@app.get("/gff/{url:path}/{seqid}:{start}-{end}")
+def gff_features(url: str, seqid: str, start: int, end: int):
   return [ {"contig": feature.contig,
             "feature": feature.feature,
             "source": feature.source,
@@ -35,14 +35,14 @@ def gff_features(gff: str, seqid: str, start: int, end: int):
             "frame": feature.frame,
             "attributes": feature.attributes} 
             for feature 
-            in pysam.TabixFile(BASE_URL + data[gff] + gff).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
+            in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
 
-@app.get("/vcf/{vcf}/contigs")
-def vcf_contigs(vcf: str):
-  return { "contigs": list(pysam.VariantFile(BASE_URL + data[vcf] + vcf).header.contigs) }
+@app.get("/vcf/{url:path}/contigs")
+def vcf_contigs(url: str):
+  return { "contigs": list(pysam.VariantFile(urllib.parse.unquote(url)).header.contigs) }
 
-@app.get("/vcf/{vcf}/{seqid}:{start}-{end}")
-def vcf_features(vcf: str, seqid: str, start: int, end: int):
+@app.get("/vcf/{url:path}/{seqid}:{start}-{end}")
+def vcf_features(url: str, seqid: str, start: int, end: int):
   return [ {"chrom":   feature.chrom,
             "pos":     feature.pos,
             "id":      feature.id,
@@ -55,4 +55,4 @@ def vcf_features(vcf: str, seqid: str, start: int, end: int):
             "samples": list(feature.samples),
             "alleles": feature.alleles}
             for feature 
-            in pysam.VariantFile(BASE_URL + data[vcf] + vcf).fetch(seqid, start, end) ]
+            in pysam.VariantFile(urllib.parse.unquote(url)).fetch(seqid, start, end) ]
