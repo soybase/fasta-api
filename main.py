@@ -33,7 +33,7 @@ def gff_features(url: str, seqid: str, start: int, end: int):
             "score": feature.score,
             "strand": feature.strand,
             "frame": feature.frame,
-            "attributes": feature.attributes} 
+            "attributes": dict(a.split("=") for a in feature.attributes.split(";") if a != "")} 
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
 
