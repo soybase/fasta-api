@@ -7,17 +7,17 @@ Example:
 ...
 % make
 ...
-$ curl http://localhost:8000/fasta/https://www.soybase.org/data/v2/Glycine/max/genomes/Wm82.gnm2.DTC4/glyma.Wm82.gnm2.DTC4.genome_main.fna.gz/references 
+$ curl http://localhost:8000/fasta/references/https://www.soybase.org/data/v2/Glycine/max/genomes/Wm82.gnm2.DTC4/glyma.Wm82.gnm2.DTC4.genome_main.fna.gz
 {"references":["glyma.Wm82.gnm2.Gm01","glyma.Wm82.gnm2.Gm02",...
-$ curl http://localhost:8000/fasta/https://www.soybase.org/data/v2/Glycine/max/genomes/Wm82.gnm2.DTC4/glyma.Wm82.gnm2.DTC4.genome_main.fna.gz/glyma.Wm82.gnm2.Gm01:1-100 
+$ curl http://localhost:8000/fasta/glyma.Wm82.gnm2.Gm01:1-100/https://www.soybase.org/data/v2/Glycine/max/genomes/Wm82.gnm2.DTC4/glyma.Wm82.gnm2.DTC4.genome_main.fna.gz 
 {"sequence":"GTTTGGTGTTTGGGTTTTAGGTTTTAGGTTTTAGGTTTTACGGTTTAGGGTTTATGGTTTATGGTTTAGGGTTTAGGGTTAGGAAATAATTTGGGTCTT"}
-$ curl http://localhost:8000/gff/https://www.soybase.org/data/v2/Glycine/max/annotations/Wm82.gnm2.ann1.RVB6/glyma.Wm82.gnm2.ann1.RVB6.gene_models_main.gff3.gz/contigs 
+$ curl http://localhost:8000/gff/contigs/https://www.soybase.org/data/v2/Glycine/max/annotations/Wm82.gnm2.ann1.RVB6/glyma.Wm82.gnm2.ann1.RVB6.gene_models_main.gff3.gz 
 {"contigs":["glyma.Wm82.gnm2.Gm01","glyma.Wm82.gnm2.Gm02",...
-$ curl http://localhost:8000/gff/https://www.soybase.org/data/v2/Glycine/max/annotations/Wm82.gnm2.ann1.RVB6/glyma.Wm82.gnm2.ann1.RVB6.gene_models_main.gff3.gz/glyma.Wm82.gnm2.Gm01:1-100000
+$ curl http://localhost:8000/gff/glyma.Wm82.gnm2.Gm01:1-100000/https://www.soybase.org/data/v2/Glycine/max/annotations/Wm82.gnm2.ann1.RVB6/glyma.Wm82.gnm2.ann1.RVB6.gene_models_main.gff3.gz
 [{"contig":"glyma.Wm82.gnm2.Gm01","feature":"gene","source":"phytozomev10","start":27354,"end":28320,"score":null,"strand":"-","frame":null,"attributes":"ID=glyma.Wm82.gnm2.ann1.Glyma.01G000100;...
-$ curl http://localhost:8000/vcf/https://www.soybase.org/data/v2/Glycine/max/diversity/Wm82.gnm1.div.ContrerasSoto_Mora_2017/glyma.Wm82.gnm1.div.ContrerasSoto_Mora_2017.SNPs.vcf.gz/contigs
+$ curl http://localhost:8000/vcf/contigs/https://www.soybase.org/data/v2/Glycine/max/diversity/Wm82.gnm1.div.ContrerasSoto_Mora_2017/glyma.Wm82.gnm1.div.ContrerasSoto_Mora_2017.SNPs.vcf.gz
 {"contigs":["scaffold_148","scaffold_2079","scaffold_639","scaffold_648","scaffold_1961","scaffold_1902","scaffold_1416","scaffold_1649","scaffold_2267",...
-$ curl http://localhost:8000/vcf/https://www.soybase.org/data/v2/Glycine/max/diversity/Wm82.gnm1.div.ContrerasSoto_Mora_2017/glyma.Wm82.gnm1.div.ContrerasSoto_Mora_2017.SNPs.vcf.gz/glyma.Wm82.gnm1.Gm16:1-100000
+$ curl http://localhost:8000/vcf/glyma.Wm82.gnm1.Gm16:1-100000/https://www.soybase.org/data/v2/Glycine/max/diversity/Wm82.gnm1.div.ContrerasSoto_Mora_2017/glyma.Wm82.gnm1.div.ContrerasSoto_Mora_2017.SNPs.vcf.gz
 [{"chrom":"glyma.Wm82.gnm1.Gm16","pos":35846,"id":"M4191","ref":"A","alts":["G"],"qual":null,"filter":[],"info":[],"format":["GT"],"samples":["ANTA","A6001-RR"...
 ```
 
