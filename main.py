@@ -19,6 +19,14 @@ def fasta_range(url: str, seqid: str, start: int, end: int):
 def fasta_references(url: str):
     return { "references": pysam.FastaFile(urllib.parse.unquote(url)).references }
 
+@app.get("/fasta/lengths/{url:path}")
+def fasta_lengths(url: str):
+    return { "lengths": pysam.FastaFile(urllib.parse.unquote(url)).lengths }
+
+@app.get("/fasta/nreferences/{url:path}")
+def fasta_nreferences(url: str):
+    return { "nreferences": pysam.FastaFile(urllib.parse.unquote(url)).nreferences }
+
 @app.get("/gff/contigs/{url:path}")
 def gff_references(url: str):
     return { "contigs": pysam.TabixFile(urllib.parse.unquote(url)).contigs }
