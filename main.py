@@ -64,3 +64,44 @@ def vcf_features(url: str, seqid: str, start: int, end: int):
             "alleles": feature.alleles}
             for feature 
             in pysam.VariantFile(urllib.parse.unquote(url)).fetch(seqid, start, end) ]
+
+@app.get("/alignment/references/{url:path}")
+def alignment_references(url: str):
+    return { "references": pysam.AlignmentFile(urllib.parse.unquote(url)).references }
+
+
+@app.get("/alignment/unmapped/{url:path}")
+def alignment_unmapped(url: str):
+    return { "unmapped": pysam.AlignmentFile(urllib.parse.unquote(url)).unmapped }
+
+@app.get("/alignment/nreferences/{url:path}")
+def alignment_nreferences(url: str):
+    return { "nreferences": pysam.AlignmentFile(urllib.parse.unquote(url)).nreferences }
+
+@app.get("/alignment/nocoordinate/{url:path}")
+def alignment_nocoordinate(url: str):
+    return { "nocoordinate": pysam.AlignmentFile(urllib.parse.unquote(url)).nocoordinate }
+
+@app.get("/alignment/mapped/{url:path}")
+def alignment_mapped(url: str):
+    return { "mapped": pysam.AlignmentFile(urllib.parse.unquote(url)).mapped }
+
+@app.get("/alignment/lengths/{url:path}")
+def alignment_lengths(url: str):
+    return { "lengths": pysam.AlignmentFile(urllib.parse.unquote(url)).lengths }
+
+@app.get("/alignment/index_statistics/{url:path}")
+def alignment_index_statistics(url: str):
+    return { "index_statistics": pysam.AlignmentFile(urllib.parse.unquote(url)).index_statistics }
+
+
+@app.get("/alignment/count/{contig}:{start}-{stop}/{url:path}")
+def fasta_range(url: str, contig: str, start: int, stop: int):
+    count = pysam.AlignmentFile(urllib.parse.unquote(url)).count(contig, start, stop)
+    return { "count" : count }
+
+@app.get("/alignment/fetch/{contig}:{start}-{stop}/{url:path}")
+def fasta_range(url: str, contig: str, start: int, stop: int):
+    seq = pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop)
+    return { "sequence" : seq }
+    
