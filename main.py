@@ -92,16 +92,29 @@ def alignment_lengths(url: str):
 
 @app.get("/alignment/index_statistics/{url:path}")
 def alignment_index_statistics(url: str):
-    return { "index_statistics": pysam.AlignmentFile(urllib.parse.unquote(url)).index_statistics }
+    return { "index_statistics": pysam.AlignmentFile(urllib.parse.unquote(url)).get_index_statistics() }
 
 
+
+##FOLLOWING NOT FUNCTIONAL
 @app.get("/alignment/count/{contig}:{start}-{stop}/{url:path}")
-def fasta_range(url: str, contig: str, start: int, stop: int):
+def alignment_count(url: str, contig: str, start: int, stop: int):
     count = pysam.AlignmentFile(urllib.parse.unquote(url)).count(contig, start, stop)
     return { "count" : count }
 
+@app.get("/alignment/count_coverage/{contig}:{start}-{stop}/{url:path}")
+def alignment_count_coverage(url: str, contig: str, start: int, stop: int):
+    count_coverage = pysam.AlignmentFile(urllib.parse.unquote(url)).count_coverage(contig, start, stop)
+    return { "count_coverage" : count_coverage }
+
 @app.get("/alignment/fetch/{contig}:{start}-{stop}/{url:path}")
-def fasta_range(url: str, contig: str, start: int, stop: int):
-    seq = pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop)
-    return { "sequence" : seq }
+def alignment_fetch(url: str, contig: str, start: int, stop: int):
+    fetch = pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop)
+    return { "fetch" : fetch }
+
+@app.get("/alignment/length/{reference}/{url:path}")
+def alignment_lengths(reference: str , url: str):
+    return { "length": pysam.AlignmentFile(urllib.parse.unquote(url)).get_reference_length(reference) }
+
+
     
