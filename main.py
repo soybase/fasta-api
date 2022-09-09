@@ -105,12 +105,19 @@ def alignment_count(url: str, contig: str, start: int, stop: int):
 @app.get("/alignment/count_coverage/{contig}:{start}-{stop}/{url:path}")
 def alignment_count_coverage(url: str, contig: str, start: int, stop: int):
     count_coverage = pysam.AlignmentFile(urllib.parse.unquote(url)).count_coverage(contig, start, stop)
-    return { "count_coverage" : count_coverage }
+    return [{"A" : json.dumps([x for x in count_coverage[0]]),
+             "B" : json.dumps([x for x in count_coverage[1]]),
+             "C" : json.dumps([x for x in count_coverage[2]]),
+             "D" : json.dumps([x for x in count_coverage[3]])
+                }]
+
 
 @app.get("/alignment/fetch/{contig}:{start}-{stop}/{url:path}")
 def alignment_fetch(url: str, contig: str, start: int, stop: int):
-    fetch = pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop)
-    return { "fetch" : fetch }
+     return [ {"fetch": feature.to_dict()}
+            for feature
+            in pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop) ]
+
 
 @app.get("/alignment/length/{reference}/{url:path}")
 def alignment_lengths(reference: str , url: str):
