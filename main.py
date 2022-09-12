@@ -96,7 +96,7 @@ def alignment_index_statistics(url: str):
 
 
 
-##FOLLOWING NOT FUNCTIONAL
+
 @app.get("/alignment/count/{contig}:{start}-{stop}/{url:path}")
 def alignment_count(url: str, contig: str, start: int, stop: int):
     count = pysam.AlignmentFile(urllib.parse.unquote(url)).count(contig, start, stop)
