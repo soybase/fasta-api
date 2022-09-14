@@ -64,3 +64,64 @@ def vcf_features(url: str, seqid: str, start: int, end: int):
             "alleles": feature.alleles}
             for feature 
             in pysam.VariantFile(urllib.parse.unquote(url)).fetch(seqid, start, end) ]
+
+@app.get("/alignment/references/{url:path}")
+def alignment_references(url: str):
+    return { "references": pysam.AlignmentFile(urllib.parse.unquote(url)).references }
+
+
+@app.get("/alignment/unmapped/{url:path}")
+def alignment_unmapped(url: str):
+    return { "unmapped": pysam.AlignmentFile(urllib.parse.unquote(url)).unmapped }
+
+@app.get("/alignment/nreferences/{url:path}")
+def alignment_nreferences(url: str):
+    return { "nreferences": pysam.AlignmentFile(urllib.parse.unquote(url)).nreferences }
+
+@app.get("/alignment/nocoordinate/{url:path}")
+def alignment_nocoordinate(url: str):
+    return { "nocoordinate": pysam.AlignmentFile(urllib.parse.unquote(url)).nocoordinate }
+
+@app.get("/alignment/mapped/{url:path}")
+def alignment_mapped(url: str):
+    return { "mapped": pysam.AlignmentFile(urllib.parse.unquote(url)).mapped }
+
+@app.get("/alignment/lengths/{url:path}")
+def alignment_lengths(url: str):
+    return { "lengths": pysam.AlignmentFile(urllib.parse.unquote(url)).lengths }
+
+@app.get("/alignment/index_statistics/{url:path}")
+def alignment_index_statistics(url: str):
+    return { "index_statistics": pysam.AlignmentFile(urllib.parse.unquote(url)).get_index_statistics() }
+
+
+
+
+@app.get("/alignment/count/{contig}:{start}-{stop}/{url:path}")
+def alignment_count(url: str, contig: str, start: int, stop: int):
+    count = pysam.AlignmentFile(urllib.parse.unquote(url)).count(contig, start, stop)
+    return { "count" : count }
+
+@app.get("/alignment/count_coverage/{contig}:{start}-{stop}/{url:path}")
+def alignment_count_coverage(url: str, contig: str, start: int, stop: int):
+    count_coverage = pysam.AlignmentFile(urllib.parse.unquote(url)).count_coverage(contig, start, stop)
+    return [{"A" : json.dumps([x for x in count_coverage[0]]),
+             "B" : json.dumps([x for x in count_coverage[1]]),
+             "C" : json.dumps([x for x in count_coverage[2]]),
+             "D" : json.dumps([x for x in count_coverage[3]])
+                }]
+
+
+@app.get("/alignment/fetch/{contig}:{start}-{stop}/{url:path}")
+def alignment_fetch(url: str, contig: str, start: int, stop: int):
+     return [ {"fetch": feature.to_dict()}
+            for feature
+            in pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop) ]
+
+
+@app.get("/alignment/length/{reference}/{url:path}")
+def alignment_lengths(reference: str , url: str):
+    return { "length": pysam.AlignmentFile(urllib.parse.unquote(url)).get_reference_length(reference) }
+
+
+    
