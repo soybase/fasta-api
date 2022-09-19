@@ -10,7 +10,7 @@ app = FastAPI()
 with open("data.json") as f:
     data = json.load(f)
 
-@app.get("/fasta/{seqid}:{start}-{end}/{url:path}")
+@app.get("/fasta/fetch/{seqid}:{start}-{end}/{url:path}")
 def fasta_range(url: str, seqid: str, start: int, end: int):
     seq = pysam.FastaFile(urllib.parse.unquote(url)).fetch(reference=seqid, start = start, end = end)
     return { "sequence" : seq }
@@ -31,7 +31,7 @@ def fasta_nreferences(url: str):
 def gff_references(url: str):
     return { "contigs": pysam.TabixFile(urllib.parse.unquote(url)).contigs }
 
-@app.get("/gff/{seqid}:{start}-{end}/{url:path}")
+@app.get("/gff/fetch/{seqid}:{start}-{end}/{url:path}")
 def gff_features(url: str, seqid: str, start: int, end: int):
   return [ {"contig": feature.contig,
             "feature": feature.feature,
@@ -49,7 +49,7 @@ def gff_features(url: str, seqid: str, start: int, end: int):
 def vcf_contigs(url: str):
   return { "contigs": list(pysam.VariantFile(urllib.parse.unquote(url)).header.contigs) }
 
-@app.get("/vcf/{seqid}:{start}-{end}/{url:path}")
+@app.get("/vcf/fetch/{seqid}:{start}-{end}/{url:path}")
 def vcf_features(url: str, seqid: str, start: int, end: int):
   return [ {"chrom":   feature.chrom,
             "pos":     feature.pos,
