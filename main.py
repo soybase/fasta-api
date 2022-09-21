@@ -45,6 +45,16 @@ def gff_features(url: str, seqid: str, start: int, end: int):
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
 
+@app.get("/bed/fetch/{seqid}:{start}-{end}/{url:path}")
+def bed_features(url: str, seqid: str, start: int, end: int):
+  return [ {"contig": feature.contig,
+            "start": feature.start,
+            "end": feature.end,
+            "score": feature.score
+            } 
+            for feature 
+            in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asBed()) ]
+
 @app.get("/vcf/contigs/{url:path}")
 def vcf_contigs(url: str):
   return { "contigs": list(pysam.VariantFile(urllib.parse.unquote(url)).header.contigs) }
