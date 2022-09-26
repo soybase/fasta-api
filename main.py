@@ -47,10 +47,12 @@ def gff_features(url: str, seqid: str, start: int, end: int):
 
 @app.get("/bed/fetch/{seqid}:{start}-{end}/{url:path}")
 def bed_features(url: str, seqid: str, start: int, end: int):
-  return [ {"contig": feature.contig,
+  return [{"contig": feature.contig,
             "start": feature.start,
             "end": feature.end,
-            "score": feature.score
+            "name": feature.name,
+            "score": feature.score,
+            "strand": feature.strand,  
             } 
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asBed()) ]
