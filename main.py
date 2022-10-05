@@ -46,6 +46,7 @@ def gff_features(url: str, seqid: str, start: int, end: int):
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
 
+#As itemRgb, blockSizes, and blockStarts columns are rare, their types have not been determined and may change.
 @app.get("/bed/fetch/{seqid}:{start}-{end}/{url:path}")
 def bed_features(url: str, seqid: str, start: int, end: int):
   bedcols = ('contig', 'start', 'end', 'name', 'score', 'strand', 'thickStart', 'thickEnd', 'itemRGB', 'blockCount', 'blockSizes', 'blockStarts')
