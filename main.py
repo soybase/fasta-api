@@ -3,6 +3,7 @@ import json
 import pysam
 from fastapi import FastAPI
 import urllib
+import itertools
 
 
 app = FastAPI()
@@ -44,6 +45,14 @@ def gff_features(url: str, seqid: str, start: int, end: int):
             "attributes": dict(a.split("=") for a in feature.attributes.split(";") if a != "")} 
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
+
+#As itemRgb, blockSizes, and blockStarts columns are rare, their types have not been determined and may change.
+@app.get("/bed/fetch/{seqid}:{start}-{end}/{url:path}")
+def bed_features(url: str, seqid: str, start: int, end: int):
+  bedcols = ('contig', 'start', 'end', 'name', 'score', 'strand', 'thickStart', 'thickEnd', 'itemRGB', 'blockCount', 'blockSizes', 'blockStarts')
+  return [dict(itertools.starmap(lambda k,v: (k, int(v) if k in ['start', 'end', 'thickStart', 'thickEnd'] else float(v) if k == 'score' else v), zip(bedcols, feature)))
+            for feature 
+            in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asBed()) ]
 
 @app.get("/vcf/contigs/{url:path}")
 def vcf_contigs(url: str):
@@ -114,7 +123,7 @@ def alignment_count_coverage(url: str, contig: str, start: int, stop: int):
 
 @app.get("/alignment/fetch/{contig}:{start}-{stop}/{url:path}")
 def alignment_fetch(url: str, contig: str, start: int, stop: int):
-     return [ {"fetch": feature.to_dict()}
+     return [feature.to_dict()
             for feature
             in pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop) ]
 
