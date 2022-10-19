@@ -80,6 +80,7 @@ def bed_features(url: str, seqid: str):
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid,  parser=pysam.asBed()) ]
 
+
 @app.get("/vcf/contigs/{url:path}")
 def vcf_contigs(url: str):
   return { "contigs": list(pysam.VariantFile(urllib.parse.unquote(url)).header.contigs) }
