@@ -16,6 +16,11 @@ def fasta_range(url: str, seqid: str, start: int, end: int):
     seq = pysam.FastaFile(urllib.parse.unquote(url)).fetch(reference=seqid, start = start, end = end)
     return { "sequence" : seq }
 
+@app.get("/fasta/fetch/{seqid}/{url:path}")
+def fasta_range(url: str, seqid: str):
+    seq = pysam.FastaFile(urllib.parse.unquote(url)).fetch(reference=seqid)
+    return { "sequence" : seq }
+
 @app.get("/fasta/references/{url:path}")
 def fasta_references(url: str):
     return { "references": pysam.FastaFile(urllib.parse.unquote(url)).references }
@@ -46,6 +51,20 @@ def gff_features(url: str, seqid: str, start: int, end: int):
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asGFF3()) ]
 
+@app.get("/gff/fetch/{seqid}/{url:path}")
+def gff_features(url: str, seqid: str):
+  return [ {"contig": feature.contig,
+            "feature": feature.feature,
+            "source": feature.source,
+            "start": feature.start,
+            "end": feature.end,
+            "score": feature.score,
+            "strand": feature.strand,
+            "frame": feature.frame,
+            "attributes": dict(a.split("=") for a in feature.attributes.split(";") if a != "")} 
+            for feature 
+            in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, parser=pysam.asGFF3()) ]
+
 #As itemRgb, blockSizes, and blockStarts columns are rare, their types have not been determined and may change.
 @app.get("/bed/fetch/{seqid}:{start}-{end}/{url:path}")
 def bed_features(url: str, seqid: str, start: int, end: int):
@@ -53,6 +72,14 @@ def bed_features(url: str, seqid: str, start: int, end: int):
   return [dict(itertools.starmap(lambda k,v: (k, int(v) if k in ['start', 'end', 'thickStart', 'thickEnd'] else float(v) if k == 'score' else v), zip(bedcols, feature)))
             for feature 
             in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid, start, end, parser=pysam.asBed()) ]
+
+@app.get("/bed/fetch/{seqid}/{url:path}")
+def bed_features(url: str, seqid: str):
+  bedcols = ('contig', 'start', 'end', 'name', 'score', 'strand', 'thickStart', 'thickEnd', 'itemRGB', 'blockCount', 'blockSizes', 'blockStarts')
+  return [dict(itertools.starmap(lambda k,v: (k, int(v) if k in ['start', 'end', 'thickStart', 'thickEnd'] else float(v) if k == 'score' else v), zip(bedcols, feature)))
+            for feature 
+            in pysam.TabixFile(urllib.parse.unquote(url)).fetch(seqid,  parser=pysam.asBed()) ]
+
 
 @app.get("/vcf/contigs/{url:path}")
 def vcf_contigs(url: str):
@@ -73,6 +100,22 @@ def vcf_features(url: str, seqid: str, start: int, end: int):
             "alleles": feature.alleles}
             for feature 
             in pysam.VariantFile(urllib.parse.unquote(url)).fetch(seqid, start, end) ]
+
+@app.get("/vcf/fetch/{seqid}/{url:path}")
+def vcf_features(url: str, seqid: str):
+  return [ {"chrom":   feature.chrom,
+            "pos":     feature.pos,
+            "id":      feature.id,
+            "ref":     feature.ref,
+            "alts":    feature.alts,
+            "qual":    feature.qual,
+            "filter":  list(feature.filter),
+            "info":    list(feature.info),
+            "format":  list(feature.format),
+            "samples": list(feature.samples),
+            "alleles": feature.alleles}
+            for feature 
+            in pysam.VariantFile(urllib.parse.unquote(url)).fetch(seqid) ]
 
 @app.get("/alignment/references/{url:path}")
 def alignment_references(url: str):
@@ -126,6 +169,12 @@ def alignment_fetch(url: str, contig: str, start: int, stop: int):
      return [feature.to_dict()
             for feature
             in pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig, start = start, stop = stop) ]
+
+@app.get("/alignment/fetch/{contig}/{url:path}")
+def alignment_fetch(url: str, contig: str):
+     return [feature.to_dict()
+            for feature
+            in pysam.AlignmentFile(urllib.parse.unquote(url)).fetch(contig=contig) ]
 
 
 @app.get("/alignment/length/{reference}/{url:path}")
