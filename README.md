@@ -19,6 +19,13 @@ $ curl http://localhost:8000/vcf/contigs/https://www.soybase.org/data/v2/Glycine
 {"contigs":["scaffold_148","scaffold_2079","scaffold_639","scaffold_648","scaffold_1961","scaffold_1902","scaffold_1416","scaffold_1649","scaffold_2267",...
 $ curl http://localhost:8000/vcf/fetch/glyma.Wm82.gnm1.Gm16:1-100000/https://www.soybase.org/data/v2/Glycine/max/diversity/Wm82.gnm1.div.ContrerasSoto_Mora_2017/glyma.Wm82.gnm1.div.ContrerasSoto_Mora_2017.SNPs.vcf.gz
 [{"chrom":"glyma.Wm82.gnm1.Gm16","pos":35846,"id":"M4191","ref":"A","alts":["G"],"qual":null,"filter":[],"info":[],"format":["GT"],"samples":["ANTA","A6001-RR"...
-```
+$ curl http://localhost:8000/bed/fetch/glyma.Wm82.gnm2.Gm01:1-100000/https://data.legumeinfo.org/Glycine/max/annotations/Wm82.gnm2.ann2.BG1Q/glyma.Wm82.gnm2.ann2.BG1Q.cds.bed.gz
+[{"contig":"glyma.Wm82.gnm2.Gm01","start":60479,"end":63418,"name":"glyma.Wm82.gnm2.ann2.LOC102661143.1","score":0.0,"strand":"-"},{"contig":"glyma.Wm82.gnm2.Gm01","start":90553,"end":94262,"name":"glyma.Wm82.gnm2.ann2.LOC100781438.1","
+score":0.0,"strand":"-"}]
+$ curl http://localhost:8000/alignment/fetch/aradu.V14167.gnm2.chr01:1-100000/https://data.legumeinfo.org/Arachis/duranensis/synteny/V14167.gnm2.syn.96TT/aradu.V14167.gnm2.x.araca.K10017.gnm1.96TT.bam
+[{"name":"araca.K10017.gnm1.chr01","flag":"2048","ref_name":"aradu.V14167.gnm2.chr01","ref_pos":"45008","map_quality":"60","cigar":"191657H159M11I364M10D109M2D685M10I111...
+'''
+
+
 
 See also http://localhost:8000/docs for the FastAPI [Interactive API docs](https://fastapi.tiangolo.com/#interactive-api-docs)
