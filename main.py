@@ -8,9 +8,6 @@ import itertools
 
 app = FastAPI()
 
-with open("data.json") as f:
-    data = json.load(f)
-
 @app.get("/fasta/fetch/{seqid}:{start}-{end}/{url:path}")
 def fasta_range(url: str, seqid: str, start: int, end: int):
     seq = pysam.FastaFile(urllib.parse.unquote(url)).fetch(reference=seqid, start = start, end = end)
