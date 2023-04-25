@@ -19,14 +19,6 @@ make publish
 make publish # NOTE: for some reason, first deployment doesn't complete, and this needs to be run twice???
 ```
 
-## Deployment
-Deploy on Azure Functions per the example [Using FastAPI Framework with Azure Functions](https://learn.microsoft.com/en-us/samples/azure-samples/fastapi-on-azure-functions/azure-functions-python-create-fastapi-app/).
-
-```
-az login --use-device-code
-func azure functionapp publish <app-name>
-```
-
 ## Examples
 
 Assuming application endpoint is https://fasta-api.azurewebsites.net
