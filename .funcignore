@@ -1,0 +1,5 @@
+.devcontainer
+.git*
+Makefile
+README.md
+.venv

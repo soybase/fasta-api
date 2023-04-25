@@ -1,11 +1,18 @@
 .POSIX:
 
-run:
-	. venv/bin/activate && uvicorn main:app
+APP=fasta-api
+
+test:
+	func start
 
 install:
-	python3 -mvenv venv
-	. venv/bin/activate \
-	&& pip install --upgrade --no-cache-dir pip \
-	&& pip install --no-cache-dir wheel \
+	python3 -mvenv .venv
+	. .venv/bin/activate \
 	&& pip install --no-cache-dir -r requirements.txt
+
+login:
+	az login --use-device-code
+
+publish:
+	func azure functionapp publish $(APP)
+

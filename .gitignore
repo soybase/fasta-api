@@ -1,2 +1,4 @@
 *.tbi
 venv
+.venv
+__pycache__
