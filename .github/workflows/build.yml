@@ -1,0 +1,24 @@
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      CONTAINER_IMAGE: ghcr.io/soybase/fasta-api:latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: build
+      run: docker build -t ${{ env.CONTAINER_IMAGE }} -f Containerfile .
+    - name: test
+      run: |
+          docker run -d -p 8000:8000 ${{ env.CONTAINER_IMAGE }}
+          while ! curl --fail --silent -o /dev/null http://localhost:8000/docs; do sleep 1; done
+          make test
+    - name: push
+      if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        docker push ${{ env.CONTAINER_IMAGE }}
