@@ -1,7 +1,7 @@
 .POSIX:
 
 run:
-	. venv/bin/activate; fi && uvicorn main:app
+	. venv/bin/activate && uvicorn main:app
 
 install:
 	python3 -mvenv venv
