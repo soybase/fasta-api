@@ -31,6 +31,8 @@ def fasta_range(url: str, seqid: str, start: int, end: int):
         send_400_resp(f"Unable to find feature: {e}")
     except ValueError as e:
         send_400_resp(f"Unable to interpret coordinates: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/fasta/fetch/{seqid}/{url:path}")
 def fasta_range(url: str, seqid: str):
@@ -41,6 +43,8 @@ def fasta_range(url: str, seqid: str):
         send_400_resp(f"Unable to open file: {e}")
     except KeyError as e:
         send_400_resp(f"Unable to find feature: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/fasta/references/{url:path}")
 def fasta_references(url: str):
@@ -48,6 +52,8 @@ def fasta_references(url: str):
         return { "references": pysam.FastaFile(check_url(url)).references }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/fasta/lengths/{url:path}")
 def fasta_lengths(url: str):
@@ -55,6 +61,8 @@ def fasta_lengths(url: str):
         return { "lengths": pysam.FastaFile(check_url(url)).lengths }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/fasta/nreferences/{url:path}")
 def fasta_nreferences(url: str):
@@ -62,6 +70,8 @@ def fasta_nreferences(url: str):
         return { "nreferences": pysam.FastaFile(check_url(url)).nreferences }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/gff/contigs/{url:path}")
 def gff_references(url: str):
@@ -69,6 +79,8 @@ def gff_references(url: str):
         return { "contigs": pysam.TabixFile(check_url(url)).contigs }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/gff/fetch/{seqid}:{start}-{end}/{url:path}")
 def gff_features(url: str, seqid: str, start: int, end: int):
@@ -90,6 +102,8 @@ def gff_features(url: str, seqid: str, start: int, end: int):
     send_400_resp(f"Unable to find feature: {e}")
   except IndexError as e:
     send_400_resp(f"Unable to find index: {e}")
+  except Exception as e:
+    send_400_resp(f"{e}")
 
 @app.get("/gff/fetch/{seqid}/{url:path}")
 def gff_features(url: str, seqid: str):
@@ -109,6 +123,8 @@ def gff_features(url: str, seqid: str):
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
+  except Exception as e:
+    send_400_resp(f"{e}")
 
 #As itemRgb, blockSizes, and blockStarts columns are rare, their types have not been determined and may change.
 @app.get("/bed/fetch/{seqid}:{start}-{end}/{url:path}")
@@ -124,6 +140,8 @@ def bed_features(url: str, seqid: str, start: int, end: int):
     send_400_resp(f"Unable to find feature: {e}")
   except IndexError as e:
     send_400_resp(f"Unable to find index: {e}")
+  except Exception as e:
+      send_400_resp(f"{e}")
 
 @app.get("/bed/fetch/{seqid}/{url:path}")
 def bed_features(url: str, seqid: str):
@@ -136,6 +154,8 @@ def bed_features(url: str, seqid: str):
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
+  except Exception as e:
+    send_400_resp(f"{e}")
 
 @app.get("/vcf/contigs/{url:path}")
 def vcf_contigs(url: str):
@@ -143,6 +163,8 @@ def vcf_contigs(url: str):
     return { "contigs": list(pysam.VariantFile(urllib.parse.unquote(url)).header.contigs) }
   except OSError as e:
     send_400_resp(f"Unable to open file: {e}")
+  except Exception as e:
+    send_400_resp(f"{e}")
 
 @app.get("/vcf/fetch/{seqid}:{start}-{end}/{url:path}")
 def vcf_features(url: str, seqid: str, start: int, end: int):
@@ -166,6 +188,8 @@ def vcf_features(url: str, seqid: str, start: int, end: int):
     send_400_resp(f"Unable to find feature: {e}")
   except IndexError as e:
     send_400_resp(f"Unable to find index: {e}")
+  except Exception as e:
+    send_400_resp(f"{e}")
 
 @app.get("/vcf/fetch/{seqid}/{url:path}")
 def vcf_features(url: str, seqid: str):
@@ -187,6 +211,8 @@ def vcf_features(url: str, seqid: str):
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
+  except Exception as e:
+    send_400_resp(f"{e}")
 
 @app.get("/alignment/references/{url:path}")
 def alignment_references(url: str):
@@ -194,6 +220,8 @@ def alignment_references(url: str):
         return { "references": pysam.AlignmentFile(check_url(url)).references }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/unmapped/{url:path}")
 def alignment_unmapped(url: str):
@@ -201,6 +229,8 @@ def alignment_unmapped(url: str):
         return { "unmapped": pysam.AlignmentFile(check_url(url)).unmapped }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/nreferences/{url:path}")
 def alignment_nreferences(url: str):
@@ -208,6 +238,8 @@ def alignment_nreferences(url: str):
         return { "nreferences": pysam.AlignmentFile(check_url(url)).nreferences }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/nocoordinate/{url:path}")
 def alignment_nocoordinate(url: str):
@@ -215,6 +247,8 @@ def alignment_nocoordinate(url: str):
         return { "nocoordinate": pysam.AlignmentFile(check_url(url)).nocoordinate }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/mapped/{url:path}")
 def alignment_mapped(url: str):
@@ -222,6 +256,8 @@ def alignment_mapped(url: str):
         return { "mapped": pysam.AlignmentFile(check_url(url)).mapped }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/lengths/{url:path}")
 def alignment_lengths(url: str):
@@ -236,6 +272,8 @@ def alignment_index_statistics(url: str):
         return { "index_statistics": pysam.AlignmentFile(check_url(url)).get_index_statistics() }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/count/{contig}:{start}-{stop}/{url:path}")
 def alignment_count(url: str, contig: str, start: int, stop: int):
@@ -260,6 +298,8 @@ def alignment_count_coverage(url: str, contig: str, start: int, stop: int):
         send_400_resp(f"Unable to open file: {e}")
     except KeyError as e:
         send_400_resp(f"Unable to find feature: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/fetch/{contig}:{start}-{stop}/{url:path}")
 def alignment_fetch(url: str, contig: str, start: int, stop: int):
@@ -271,6 +311,8 @@ def alignment_fetch(url: str, contig: str, start: int, stop: int):
         send_400_resp(f"Unable to open file: {e}")
     except KeyError as e:
         send_400_resp(f"Unable to find feature: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/fetch/{contig}/{url:path}")
 def alignment_fetch(url: str, contig: str):
@@ -282,6 +324,8 @@ def alignment_fetch(url: str, contig: str):
         send_400_resp(f"Unable to open file: {e}")
     except KeyError as e:
         send_400_resp(f"Unable to find feature: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 @app.get("/alignment/length/{reference}/{url:path}")
 def alignment_lengths(reference: str , url: str):
@@ -289,6 +333,8 @@ def alignment_lengths(reference: str , url: str):
        return { "length": pysam.AlignmentFile(check_url(url)).get_reference_length(reference) }
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
+    except Exception as e:
+        send_400_resp(f"{e}")
 
 
     
