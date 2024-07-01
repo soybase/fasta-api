@@ -339,4 +339,4 @@ def alignment_lengths(reference: str , url: str):
 
     
 def send_400_resp(msg):
-    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, headers={'message':msg})
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=msg)
