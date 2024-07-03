@@ -93,7 +93,7 @@ def gff_features(url: str, seqid: str, start: int, end: int):
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
-  except IndexError as e:
+  except ValueError as e:
     send_400_resp(f"Unable to find index: {e}")
 
 @app.get("/gff/fetch/{seqid}/{url:path}")
@@ -127,7 +127,7 @@ def bed_features(url: str, seqid: str, start: int, end: int):
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
-  except IndexError as e:
+  except ValueError as e:
     send_400_resp(f"Unable to find index: {e}")
 
 @app.get("/bed/fetch/{seqid}/{url:path}")
