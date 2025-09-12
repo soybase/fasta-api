@@ -291,3 +291,11 @@ def alignment_lengths(reference: str , url: str):
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
 
+
+# Return all strains present in VCF file
+@app.get("/strains/{url:path}")
+def strains(url: str):
+    try:
+        return { "strains": list(pysam.VariantFile(check_url(url)).header.samples) }
+    except OSError as e:
+        send_400_resp(f"Unable to open file: {e}")
