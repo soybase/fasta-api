@@ -1,7 +1,7 @@
 # https://pysam.readthedocs.io/en/latest/api.html#fasta-files
 import json
 import pysam
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status, Query
 import urllib
 import itertools
 import os
@@ -162,10 +162,9 @@ def vcf_contigs(url: str):
   except OSError as e:
     send_400_resp(f"Unable to open file: {e}")
 
-@app.get("/vcf/fetch/{seqid}:{start}-{end}/{strains}/{url:path}")
-def vcf_features(url: str, seqid: str, start: int, end: int, strains: str):
+@app.get("/vcf/fetch/{seqid}:{start}-{end}/{url:path}")
+def vcf_features(url: str, seqid: str, start: int, end: int, samples: list[str] = Query(default=[])):
   try:
-    samples = [s.strip() for s in strains.split(",") if s.strip()]
     vf = pysam.VariantFile(check_url(url))
     if samples:
       vf.subset_samples(samples)
@@ -186,31 +185,13 @@ def vcf_features(url: str, seqid: str, start: int, end: int, strains: str):
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
- 
-@app.get("/vcf/fetch/{seqid}:{start}-{end}/{url:path}")
-def vcf_features(url: str, seqid: str, start: int, end: int):
-  try:
-    return [ {"chrom":   feature.chrom,
-              "pos":     feature.pos,
-              "id":      feature.id,
-              "ref":     feature.ref,
-              "alts":    feature.alts,
-              "qual":    feature.qual,
-              "filter":  list(feature.filter),
-              "info":    list(feature.info),
-              "format":  list(feature.format),
-              "samples": list(feature.samples),
-              "alleles": feature.alleles}
-              for feature 
-              in pysam.VariantFile(check_url(url)).fetch(seqid, start, end) ]
-  except OSError as e:
-    send_400_resp(f"Unable to open file: {e}")
-  except KeyError as e:
-    send_400_resp(f"Unable to find feature: {e}")
 
 @app.get("/vcf/fetch/{seqid}/{url:path}")
-def vcf_features(url: str, seqid: str):
+def vcf_features(url: str, seqid: str, samples: list[str] = Query(default=[])):
   try:
+    vf = pysam.VariantFile(check_url(url))
+    if samples:
+      vf.subset_samples(samples)
     return [ {"chrom":   feature.chrom,
               "pos":     feature.pos,
               "id":      feature.id,
@@ -223,7 +204,7 @@ def vcf_features(url: str, seqid: str):
               "samples": list(feature.samples),
               "alleles": feature.alleles}
               for feature 
-              in pysam.VariantFile(check_url(url)).fetch(seqid) ]
+              in vf.fetch(seqid) ]
   except OSError as e:
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
