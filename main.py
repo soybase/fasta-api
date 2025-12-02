@@ -5,10 +5,23 @@ from fastapi import FastAPI, HTTPException, Request, status
 import urllib
 import itertools
 import os
+from starlette.middleware.cors import CORSMiddleware
 
 ALLOWED_URLS = os.environ.get("ALLOWED_URLS", "").split(",")
+ALLOWED_ORIGINS_ENV = os.environ.get("ALLOWED_ORIGINS", "*")
 
 app = FastAPI()
+
+# Configure CORS
+_origins = [o.strip() for o in ALLOWED_ORIGINS_ENV.split(",") if o.strip()]
+_allow_origins = ["*"] if not _origins or _origins == ["*"] else _origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_allow_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def check_url(url):
     url = urllib.parse.unquote(url)
@@ -149,6 +162,31 @@ def vcf_contigs(url: str):
   except OSError as e:
     send_400_resp(f"Unable to open file: {e}")
 
+@app.get("/vcf/fetch/{seqid}:{start}-{end}/{strains}/{url:path}")
+def vcf_features(url: str, seqid: str, start: int, end: int, strains: str):
+  try:
+    samples = [s.strip() for s in strains.split(",") if s.strip()]
+    vf = pysam.VariantFile(check_url(url))
+    if samples:
+      vf.subset_samples(samples)
+    return [ {"chrom":   feature.chrom,
+              "pos":     feature.pos,
+              "id":      feature.id,
+              "ref":     feature.ref,
+              "alts":    feature.alts,
+              "qual":    feature.qual,
+              "filter":  list(feature.filter),
+              "info":    list(feature.info),
+              "format":  list(feature.format),
+              "samples": list(feature.samples),
+              "alleles": feature.alleles}
+              for feature 
+              in vf.fetch(seqid, start, end) ]
+  except OSError as e:
+    send_400_resp(f"Unable to open file: {e}")
+  except KeyError as e:
+    send_400_resp(f"Unable to find feature: {e}")
+ 
 @app.get("/vcf/fetch/{seqid}:{start}-{end}/{url:path}")
 def vcf_features(url: str, seqid: str, start: int, end: int):
   try:
