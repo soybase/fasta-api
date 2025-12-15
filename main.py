@@ -312,7 +312,7 @@ def alignment_lengths(reference: str , url: str):
 
 
 # Return all strains present in VCF file
-@app.get("/strains/{url:path}")
+@app.get("/vcf/samples/{url:path}")
 def strains(url: str):
     try:
         return { "strains": list(pysam.VariantFile(check_url(url)).header.samples) }
