@@ -1,14 +1,27 @@
 # https://pysam.readthedocs.io/en/latest/api.html#fasta-files
 import json
 import pysam
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status, Query
 import urllib
 import itertools
 import os
+from starlette.middleware.cors import CORSMiddleware
 
 ALLOWED_URLS = os.environ.get("ALLOWED_URLS", "").split(",")
+ALLOWED_ORIGINS_ENV = os.environ.get("ALLOWED_ORIGINS", "*")
 
 app = FastAPI()
+
+# Configure CORS
+_origins = [o.strip() for o in ALLOWED_ORIGINS_ENV.split(",") if o.strip()]
+_allow_origins = ["*"] if not _origins or _origins == ["*"] else _origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_allow_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def check_url(url):
     url = urllib.parse.unquote(url)
@@ -150,8 +163,11 @@ def vcf_contigs(url: str):
     send_400_resp(f"Unable to open file: {e}")
 
 @app.get("/vcf/fetch/{seqid}:{start}-{end}/{url:path}")
-def vcf_features(url: str, seqid: str, start: int, end: int):
+def vcf_features(url: str, seqid: str, start: int, end: int, samples: list[str] = Query(default=[])):
   try:
+    vf = pysam.VariantFile(check_url(url))
+    if samples:
+      vf.subset_samples(samples)
     return [ {"chrom":   feature.chrom,
               "pos":     feature.pos,
               "id":      feature.id,
@@ -164,15 +180,18 @@ def vcf_features(url: str, seqid: str, start: int, end: int):
               "samples": list(feature.samples),
               "alleles": feature.alleles}
               for feature 
-              in pysam.VariantFile(check_url(url)).fetch(seqid, start, end) ]
+              in vf.fetch(seqid, start, end) ]
   except OSError as e:
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
     send_400_resp(f"Unable to find feature: {e}")
 
 @app.get("/vcf/fetch/{seqid}/{url:path}")
-def vcf_features(url: str, seqid: str):
+def vcf_features(url: str, seqid: str, samples: list[str] = Query(default=[])):
   try:
+    vf = pysam.VariantFile(check_url(url))
+    if samples:
+      vf.subset_samples(samples)
     return [ {"chrom":   feature.chrom,
               "pos":     feature.pos,
               "id":      feature.id,
@@ -185,7 +204,7 @@ def vcf_features(url: str, seqid: str):
               "samples": list(feature.samples),
               "alleles": feature.alleles}
               for feature 
-              in pysam.VariantFile(check_url(url)).fetch(seqid) ]
+              in vf.fetch(seqid) ]
   except OSError as e:
     send_400_resp(f"Unable to open file: {e}")
   except KeyError as e:
@@ -291,3 +310,11 @@ def alignment_lengths(reference: str , url: str):
     except OSError as e:
         send_400_resp(f"Unable to open file: {e}")
 
+
+# Return all strains present in VCF file
+@app.get("/vcf/samples/{url:path}")
+def strains(url: str):
+    try:
+        return { "strains": list(pysam.VariantFile(check_url(url)).header.samples) }
+    except OSError as e:
+        send_400_resp(f"Unable to open file: {e}")
